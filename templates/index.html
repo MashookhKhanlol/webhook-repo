@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Events Feed</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 24px; }
+        h1 { font-size: 1.5em; margin-bottom: 16px; }
+        ul { list-style: none; padding: 0; }
+        li { background: #f1f1f1; margin-bottom: 10px; padding: 12px 16px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GitHub Repository Events</h1>
+        <ul id="events-list">
+            <li>Loading events...</li>
+        </ul>
+    </div>
+    <script>
+        async function fetchEvents() {
+            const res = await fetch('/events');
+            const events = await res.json();
+            const list = document.getElementById('events-list');
+            list.innerHTML = '';
+            if (events.length === 0) {
+                list.innerHTML = '<li>No events yet.</li>';
+            } else {
+                events.forEach(event => {
+                    const li = document.createElement('li');
+                    li.textContent = event;
+                    list.appendChild(li);
+                });
+            }
+        }
+        fetchEvents();
+        setInterval(fetchEvents, 15000);
+    </script>
+</body>
+</html> 

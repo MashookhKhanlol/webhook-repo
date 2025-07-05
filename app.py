@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 from datetime import datetime
 
@@ -11,7 +11,7 @@ events_collection = db['events']
 
 @app.route('/')
 def home():
-    return 'Webhook Receiver Running!'
+    return render_template('index.html')
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
