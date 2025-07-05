@@ -4,33 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Events Feed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 24px; }
-        h1 { font-size: 1.5em; margin-bottom: 16px; }
-        ul { list-style: none; padding: 0; }
-        li { background: #f1f1f1; margin-bottom: 10px; padding: 12px 16px; border-radius: 4px; }
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 48px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 32px 28px 24px 28px;
+        }
+        h1 {
+            font-size: 2em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #22223b;
+            letter-spacing: -1px;
+        }
+        .subtitle {
+            color: #6c757d;
+            font-size: 1em;
+            margin-bottom: 24px;
+        }
+        .refresh {
+            font-size: 0.95em;
+            color: #4f8cff;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .refresh-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4f8cff;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+        .events-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .event-card {
+            background: #f4f7fb;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            padding: 18px 20px;
+            box-shadow: 0 1px 4px rgba(79,140,255,0.04);
+            font-size: 1.08em;
+            color: #22223b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .event-icon {
+            font-size: 1.3em;
+            margin-right: 8px;
+        }
+        .event-push { color: #4f8cff; }
+        .event-pr { color: #00b894; }
+        .event-merge { color: #fd7e14; }
+        .no-events {
+            color: #adb5bd;
+            text-align: center;
+            margin-top: 32px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>GitHub Repository Events</h1>
-        <ul id="events-list">
-            <li>Loading events...</li>
+        <h1>GitHub Repo Activity</h1>
+        <div class="subtitle">Live feed of Push, Pull Request, and Merge events</div>
+        <div class="refresh"><span class="refresh-dot"></span> Auto-refreshes every 15 seconds</div>
+        <ul class="events-list" id="events-list">
+            <li class="no-events">Loading events...</li>
         </ul>
     </div>
     <script>
+        function getEventTypeIcon(msg) {
+            if (msg.includes('pushed to')) return '<span class="event-icon event-push">⬆️</span>';
+            if (msg.includes('pull request')) return '<span class="event-icon event-pr">🔀</span>';
+            if (msg.includes('merged branch')) return '<span class="event-icon event-merge">🟠</span>';
+            return '<span class="event-icon">ℹ️</span>';
+        }
         async function fetchEvents() {
             const res = await fetch('/events');
             const events = await res.json();
             const list = document.getElementById('events-list');
             list.innerHTML = '';
             if (events.length === 0) {
-                list.innerHTML = '<li>No events yet.</li>';
+                list.innerHTML = '<li class="no-events">No events yet.</li>';
             } else {
                 events.forEach(event => {
                     const li = document.createElement('li');
-                    li.textContent = event;
+                    li.className = 'event-card';
+                    li.innerHTML = getEventTypeIcon(event) + event;
                     list.appendChild(li);
                 });
             }
